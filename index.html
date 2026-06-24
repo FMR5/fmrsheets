@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FMR Sheets - Smart Data Cleaner</title>
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/9043/9043735.png" type="image/png">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --bg-dark: #0F172A;       /* Antracite profondo */
+            --card-bg: #1E293B;       /* Antracite più chiaro per i blocchi */
+            --primary: #00E676;       /* Verde brillante / Neon */
+            --primary-hover: #00C853; /* Verde più scuro al passaggio del mouse */
+            --text-main: #F8FAFC;     /* Bianco opaco per non affaticare gli occhi */
+            --text-muted: #94A3B8;    /* Grigio per i testi secondari */
+            --border: #334155;        /* Grigio per i bordi sottili */
+        }
+
+        body { 
+            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding: 50px 20px; 
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .header { text-align: center; margin-bottom: 35px; }
+        
+        .logo { 
+            font-size: 32px; 
+            font-weight: 800; 
+            letter-spacing: -1.5px; 
+            text-transform: uppercase;
+        }
+        .logo span { 
+            color: var(--primary); 
+            font-weight: 300; 
+            text-transform: lowercase;
+        }
+        
+        .tagline { 
+            color: var(--text-muted); 
+            margin-top: 8px; 
+            font-size: 14px; 
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+
+        /* Area Caricamento File */
+        .upload-box { 
+            border: 2px dashed var(--border); 
+            padding: 50px 30px; 
+            text-align: center; 
+            background: var(--card-bg); 
+            cursor: pointer; 
+            border-radius: 16px;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        }
+        .upload-box:hover { 
+            border-color: var(--primary); 
+            background: #243249;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+        .upload-box p.title { font-size: 16px; font-weight: 600; margin: 0 0 8px 0; color: var(--text-main); }
+        .upload-box p.subtitle { color: var(--text-muted); margin: 0; font-size: 13px; }
+        
+        /* Pannello Opzioni */
+        .options { 
+            background: var(--card-bg); 
+            border: 1px solid var(--border); 
+            padding: 25px; 
+            border-radius: 16px; 
+            margin: 25px 0; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .options h3 { 
+            margin-top: 0; 
+            font-size: 15px; 
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border); 
+            padding-bottom: 12px; 
+            margin-bottom: 15px;
+        }
+        
+        /* Checkbox personalizzate */
+        .checkbox-group { 
+            margin: 16px 0; 
+            display: flex; 
+            align-items: center; 
+            cursor: pointer;
+        }
+        .checkbox-group input { 
+            margin-right: 14px; 
+            width: 20px; 
+            height: 20px; 
+            accent-color: var(--primary); 
+            cursor: pointer;
+        }
+        .checkbox-group label { 
+            font-size: 14px; 
+            color: var(--text-main); 
+            cursor: pointer;
+            line-height: 1.4;
+        }
+        .checkbox-group label b { color: var(--primary); font-weight: 600; }
+        
+        /* Pulsante con effetto Glow */
+        button { 
+            background: var(--primary); 
+            color: #0F172A; 
+            border: none; 
+            padding: 16px 20px; 
+            font-size: 16px; 
+            font-weight: 700;
+            border-radius: 12px; 
+            cursor: pointer; 
+            width: 100%; 
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 14px 0 rgba(0, 230, 118, 0.3);
+        }
+        button:hover { 
+            background: var(--primary-hover); 
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px 0 rgba(0, 230, 118, 0.5);
+        }
+        button:active { transform: translateY(1px); }
+
+        .footer-note { 
+            text-align: center; 
+            color: var(--text-muted); 
+            font-size: 12px; 
+            margin-top: 20px; 
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo">FMR<span>sheets</span></div>
+        <div class="tagline"><b>F</b>ormat <b>M</b>atters <b>R</b>epair • Pulisci i tuoi dati in un clic</div>
+    </div>
+    
+    <div class="upload-box" onclick="document.getElementById('file-input').click()">
+        <p class="title">Trascina qui il tuo file .xlsx o .csv</p>
+        <p class="subtitle">oppure clicca per sfogliare i file del tuo computer</p>
+        <input type="file" id="file-input" accept=".xlsx, .csv" style="display: none;">
+    </div>
+
+    <div class="options">
+        <h3>Opzioni di ottimizzazione</h3>
+        <div class="checkbox-group">
+            <input type="checkbox" id="clean-spaces" checked>
+            <label for="clean-spaces"><b>Trim & Clean:</b> Rimuovi spazi vuoti doppi o nascosti</label>
+        </div>
+        <div class="checkbox-group">
+            <input type="checkbox" id="proper-case" checked>
+            <label for="proper-case"><b>Proper Case:</b> Correggi Maiuscole (es. MARIO ROSSI &rarr; Mario Rossi)</label>
+        </div>
+        <div class="checkbox-group">
+            <input type="checkbox" id="format-phones" checked>
+            <label for="format-phones"><b>Standardizza Telefoni:</b> Correggi e aggiungi +39 ai numeri italiani</label>
+        </div>
+        <div class="checkbox-group">
+            <input type="checkbox" id="remove-duplicates" checked>
+            <label for="remove-duplicates"><b>Rimuovi Duplicati:</b> Elimina le righe con dati identici</label>
+        </div>
+    </div>
+
+    <button id="process-btn">Elabora e Scarica File Pulito</button>
+    <div class="footer-note">🔒 Sicurezza 100%: L'elaborazione avviene localmente sul tuo PC. Nessun dato lascia il tuo browser.</div>
+
+    <script>
+        let importedData = null;
+        let originalFileName = "file_pulito.xlsx";
+
+        // Ascolta il caricamento del file
+        document.getElementById('file-input').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            originalFileName = "FMR_pulito_" + file.name.split('.')[0] + ".xlsx";
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                
+                importedData = XLSX.utils.sheet_to_json(worksheet, {defval: ""});
+                alert(`🎯 File caricato!\n• Rilevate ${importedData.length} righe.\nOra seleziona le opzioni e clicca sul bottone in basso.`);
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        // Elaborazione al clic del bottone
+        document.getElementById('process-btn').addEventListener('click', () => {
+            if (!importedData) {
+                alert("Per favore, seleziona o trascina prima un file Excel o CSV.");
+                return;
+            }
+
+            const cleanSpaces = document.getElementById('clean-spaces').checked;
+            const properCase = document.getElementById('proper-case').checked;
+            const formatPhones = document.getElementById('format-phones').checked;
+            const removeDuplicates = document.getElementById('remove-duplicates').checked;
+
+            // 1. Pulizia dei testi riga per riga
+            let processedData = importedData.map(row => {
+                let newRow = { ...row };
+                for (let key in newRow) {
+                    if (newRow[key] !== undefined && newRow[key] !== null) {
+                        let stringValue = String(newRow[key]).trim();
+
+                        // Pulizia degli spazi
+                        if (cleanSpaces) {
+                            stringValue = stringValue.replace(/\s+/g, ' ');
+                        }
+                        
+                        // Correzione Maiuscole/Minuscole
+                        if (properCase && isNaN(stringValue)) {
+                            stringValue = stringValue.toLowerCase().replace(/\b\w/g, s => s.toUpperCase());
+                        }
+
+                        // Correzione e formattazione Telefoni Italiani
+                        if (formatPhones) {
+                            let isPhoneColumn = /tel|cell|phone|mob/i.test(key);
+                            let isNumeric = /^\d+$/.test(stringValue.replace(/[\s\-\+\(\)]/g, ''));
+                            
+                            if (isPhoneColumn || (isNumeric && stringValue.length >= 8)) {
+                                let cleaned = stringValue.replace(/\D/g, '');
+                                
+                                if (cleaned.startsWith('0039')) {
+                                    cleaned = cleaned.slice(2);
+                                }
+                                if (cleaned.startsWith('3') && !cleaned.startsWith('39')) {
+                                    cleaned = '39' + cleaned;
+                                }
+                                
+                                if (cleaned.startsWith('39') && cleaned.length >= 11) {
+                                    stringValue = `+39 ${cleaned.slice(2, 5)} ${cleaned.slice(5)}`;
+                                }
+                            }
+                        }
+
+                        newRow[key] = stringValue;
+                    }
+                }
+                return newRow;
+            });
+
+            let righePrima = processedData.length;
+
+            // 2. Eliminazione duplicati
+            if (removeDuplicates) {
+                let seen = new Set();
+                processedData = processedData.filter(row => {
+                    let rowString = JSON.stringify(row);
+                    if (seen.has(rowString)) {
+                        return false;
+                    }
+                    seen.add(rowString);
+                    return true;
+                });
+            }
+
+            let righeDopo = processedData.length;
+            let duplicatiEliminati = righePrima - righeDopo;
+
+            if (removeDuplicates && duplicatiEliminati > 0) {
+                alert(`🔥 Pulizia completata con successo!\n• Righe totali salvate: ${righeDopo}\n• Duplicati trovati ed eliminati: ${duplicatiEliminati}`);
+            } else {
+                alert(`🎯 Pulizia completata con successo! Il file pulito è pronto.`);
+            }
+
+            // Generiamo il nuovo file Excel ed esportiamo
+            const newWorksheet = XLSX.utils.json_to_sheet(processedData);
+            const newWorkbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, "Dati Puliti");
+            XLSX.writeFile(newWorkbook, originalFileName);
+        });
+    </script>
+</body>
+</html>
