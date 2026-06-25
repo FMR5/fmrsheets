@@ -1,296 +1,477 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FMR Sheets - Smart Data Cleaner</title>
-    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/9043/9043735.png" type="image/png">
+    <title>FMRsheets - Format Matters Repair</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <style>
-        :root {
-            --bg-dark: #0F172A;       /* Antracite profondo */
-            --card-bg: #1E293B;       /* Antracite più chiaro per i blocchi */
-            --primary: #00E676;       /* Verde brillante / Neon */
-            --primary-hover: #00C853; /* Verde più scuro al passaggio del mouse */
-            --text-main: #F8FAFC;     /* Bianco opaco per non affaticare gli occhi */
-            --text-muted: #94A3B8;    /* Grigio per i testi secondari */
-            --border: #334155;        /* Grigio per i bordi sottili */
-        }
 
-        body { 
-            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
-            max-width: 600px; 
-            margin: 0 auto; 
-            padding: 50px 20px; 
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
+    <script defer src="https://your-analytics-provider.com/script.js" data-website-id="IL-TUO-ID-UNICO"></script>
+    </head>
+<body class="bg-gradient-to-br from-emerald-200 via-slate-100 to-emerald-300 text-gray-800 font-sans min-h-screen flex items-center justify-center p-4">
 
-        .header { text-align: center; margin-bottom: 35px; }
+    <div class="bg-white/95 backdrop-blur-md p-8 rounded-2xl shadow-2xl w-full max-w-xl border border-emerald-100/50 relative">
         
-        .logo { 
-            font-size: 32px; 
-            font-weight: 800; 
-            letter-spacing: -1.5px; 
-            text-transform: uppercase;
-        }
-        .logo span { 
-            color: var(--primary); 
-            font-weight: 300; 
-            text-transform: lowercase;
-        }
-        
-        .tagline { 
-            color: var(--text-muted); 
-            margin-top: 8px; 
-            font-size: 14px; 
-            font-weight: 400;
-            letter-spacing: 0.5px;
-        }
-
-        /* Area Caricamento File */
-        .upload-box { 
-            border: 2px dashed var(--border); 
-            padding: 50px 30px; 
-            text-align: center; 
-            background: var(--card-bg); 
-            cursor: pointer; 
-            border-radius: 16px;
-            transition: all 0.25s ease;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-        }
-        .upload-box:hover { 
-            border-color: var(--primary); 
-            background: #243249;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-        }
-        .upload-box p.title { font-size: 16px; font-weight: 600; margin: 0 0 8px 0; color: var(--text-main); }
-        .upload-box p.subtitle { color: var(--text-muted); margin: 0; font-size: 13px; }
-        
-        /* Pannello Opzioni */
-        .options { 
-            background: var(--card-bg); 
-            border: 1px solid var(--border); 
-            padding: 25px; 
-            border-radius: 16px; 
-            margin: 25px 0; 
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        .options h3 { 
-            margin-top: 0; 
-            font-size: 15px; 
-            font-weight: 600;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 1px solid var(--border); 
-            padding-bottom: 12px; 
-            margin-bottom: 15px;
-        }
-        
-        /* Checkbox personalizzate */
-        .checkbox-group { 
-            margin: 16px 0; 
-            display: flex; 
-            align-items: center; 
-            cursor: pointer;
-        }
-        .checkbox-group input { 
-            margin-right: 14px; 
-            width: 20px; 
-            height: 20px; 
-            accent-color: var(--primary); 
-            cursor: pointer;
-        }
-        .checkbox-group label { 
-            font-size: 14px; 
-            color: var(--text-main); 
-            cursor: pointer;
-            line-height: 1.4;
-        }
-        .checkbox-group label b { color: var(--primary); font-weight: 600; }
-        
-        /* Pulsante con effetto Glow */
-        button { 
-            background: var(--primary); 
-            color: #0F172A; 
-            border: none; 
-            padding: 16px 20px; 
-            font-size: 16px; 
-            font-weight: 700;
-            border-radius: 12px; 
-            cursor: pointer; 
-            width: 100%; 
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 14px 0 rgba(0, 230, 118, 0.3);
-        }
-        button:hover { 
-            background: var(--primary-hover); 
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px 0 rgba(0, 230, 118, 0.5);
-        }
-        button:active { transform: translateY(1px); }
-
-        .footer-note { 
-            text-align: center; 
-            color: var(--text-muted); 
-            font-size: 12px; 
-            margin-top: 20px; 
-            opacity: 0.7;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="header">
-        <div class="logo">FMR<span>sheets</span></div>
-        <div class="tagline"><b>F</b>ormat <b>M</b>atters <b>R</b>epair • Pulisci i tuoi dati in un clic</div>
-    </div>
-    
-    <div class="upload-box" onclick="document.getElementById('file-input').click()">
-        <p class="title">Trascina qui il tuo file .xlsx o .csv</p>
-        <p class="subtitle">oppure clicca per sfogliare i file del tuo computer</p>
-        <input type="file" id="file-input" accept=".xlsx, .csv" style="display: none;">
-    </div>
-
-    <div class="options">
-        <h3>Opzioni di ottimizzazione</h3>
-        <div class="checkbox-group">
-            <input type="checkbox" id="clean-spaces" checked>
-            <label for="clean-spaces"><b>Trim & Clean:</b> Rimuovi spazi vuoti doppi o nascosti</label>
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <div class="flex items-center gap-3">
+                <img src="FMR_LOGO.jpg" alt="FMR Logo" class="w-12 h-12 rounded-xl object-cover border border-emerald-100 shadow-md shrink-0 select-none">
+                <div>
+                    <h1 class="text-lg font-bold text-emerald-800 leading-tight">
+                        FMRsheets
+                    </h1>
+                    <p id="app-subtitle" class="text-xs text-gray-500 font-medium mt-0.5 transition-all"></p>
+                </div>
+            </div>
+            
+            <div class="relative inline-block text-left shrink-0 self-end sm:self-center">
+                <select id="lang-select" class="bg-gray-50 border border-gray-300 text-gray-700 text-sm rounded-xl focus:ring-emerald-500 focus:border-emerald-500 p-2.5 cursor-pointer outline-none shadow-sm font-medium transition-all hover:bg-gray-100">
+                    <option value="it">🇮🇹 Italiano</option>
+                    <option value="en">🇺🇸 English</option>
+                </select>
+            </div>
         </div>
-        <div class="checkbox-group">
-            <input type="checkbox" id="proper-case" checked>
-            <label for="proper-case"><b>Proper Case:</b> Correggi Maiuscole (es. MARIO ROSSI &rarr; Mario Rossi)</label>
+
+        <div id="drop-zone" class="border-2 border-dashed border-emerald-300 bg-emerald-50/20 rounded-xl p-8 text-center cursor-pointer hover:border-emerald-500 hover:bg-emerald-50/40 transition-all mb-4 group">
+            <input type="file" id="file-input" class="hidden" accept=".xlsx, .xls, .csv">
+            <div class="flex flex-col items-center justify-center space-y-3">
+                <svg class="w-14 h-14 text-emerald-600 group-hover:scale-105 transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 12v4m-2-2h4"></path>
+                </svg>
+                <p id="drop-text" class="text-sm font-medium text-gray-600">Carica un file per iniziare</p>
+                <p id="file-name" class="text-xs text-emerald-600 font-semibold hidden"></p>
+            </div>
         </div>
-        <div class="checkbox-group">
-            <input type="checkbox" id="format-phones" checked>
-            <label for="format-phones"><b>Standardizza Telefoni:</b> Correggi e aggiungi +39 ai numeri italiani</label>
+
+        <div class="flex items-center justify-center gap-1.5 mb-6 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/60 rounded-full py-1 px-3 w-fit mx-auto shadow-sm select-none">
+            <svg class="w-3.5 h-3.5 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944a11.954 11.954 0 007.834 3.056 11.95 11.95 0 01-1.8 7.375a11.902 11.902 0 01-5.163 4.433.75.75 0 01-.542 0 11.902 11.902 0 01-5.163-4.433 11.95 11.95 0 01-1.8-7.375zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 6.5a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"></path></svg>
+            <span id="badge-security">Elaborazione 100% Locale e Sicura</span>
         </div>
-        <div class="checkbox-group">
-            <input type="checkbox" id="remove-duplicates" checked>
-            <label for="remove-duplicates"><b>Rimuovi Duplicati:</b> Elimina le righe con dati identici</label>
+
+        <div class="space-y-4 mb-6">
+            <h2 id="options-title" class="text-sm font-bold uppercase tracking-wider text-emerald-700 mb-2">Opzioni di Pulizia</h2>
+            
+            <div class="flex items-center justify-between p-2 rounded-lg hover:bg-emerald-50/30 transition-colors">
+                <label class="flex items-start space-x-3 cursor-pointer flex-1 select-none">
+                    <input type="checkbox" id="chk-trim" class="mt-1 w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500">
+                    <span id="label-trim" class="text-sm text-gray-700">Trim Spaces (Rimuovi spazi doppi e nascosti)</span>
+                </label>
+                <div class="group relative inline-block ml-2 text-gray-400 hover:text-emerald-600 shrink-0 cursor-help p-1">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+                    <div id="tip-trim" class="absolute bottom-full right-0 mb-2 w-64 bg-slate-800 text-white text-xs font-normal rounded-xl p-3 opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-200 shadow-xl border border-slate-700 z-20 leading-relaxed"></div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between p-2 rounded-lg hover:bg-emerald-50/30 transition-colors">
+                <label class="flex items-start space-x-3 cursor-pointer flex-1 select-none">
+                    <input type="checkbox" id="chk-case" class="mt-1 w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500">
+                    <span id="label-case" class="text-sm text-gray-700">Fix Text Casing (Iniziali maiuscole per Nomi/Cognomi)</span>
+                </label>
+                <div class="group relative inline-block ml-2 text-gray-400 hover:text-emerald-600 shrink-0 cursor-help p-1">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+                    <div id="tip-case" class="absolute bottom-full right-0 mb-2 w-64 bg-slate-800 text-white text-xs font-normal rounded-xl p-3 opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-200 shadow-xl border border-slate-700 z-20 leading-relaxed"></div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between p-2 rounded-lg hover:bg-emerald-50/30 transition-colors">
+                <label class="flex items-start space-x-3 cursor-pointer flex-1 select-none">
+                    <input type="checkbox" id="chk-dedup" class="mt-1 w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500">
+                    <span id="label-dedup" class="text-sm text-gray-700">Smart Deduplication (Rimuovi duplicati tenendo la riga più completa)</span>
+                </label>
+                <div class="group relative inline-block ml-2 text-gray-400 hover:text-emerald-600 shrink-0 cursor-help p-1">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+                    <div id="tip-dedup" class="absolute bottom-full right-0 mb-2 w-64 bg-slate-800 text-white text-xs font-normal rounded-xl p-3 opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-200 shadow-xl border border-slate-700 z-20 leading-relaxed"></div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between p-2 rounded-lg hover:bg-emerald-50/30 transition-colors">
+                <label class="flex items-start space-x-3 cursor-pointer flex-1 select-none">
+                    <input type="checkbox" id="chk-date" class="mt-1 w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500">
+                    <span id="label-date" class="text-sm text-gray-700">Standardize Dates (Standardizza le date nel formato ISO YYYY-MM-DD)</span>
+                </label>
+                <div class="group relative inline-block ml-2 text-gray-400 hover:text-emerald-600 shrink-0 cursor-help p-1">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+                    <div id="tip-date" class="absolute bottom-full right-0 mb-2 w-64 bg-slate-800 text-white text-xs font-normal rounded-xl p-3 opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-200 shadow-xl border border-slate-700 z-20 leading-relaxed"></div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="border-gray-200 my-5">
+        
+        <div class="space-y-4 mb-6">
+            <h2 id="pivot-title" class="text-sm font-bold uppercase tracking-wider text-emerald-700 mb-2">Ottimizzazione per Tabelle Pivot</h2>
+            
+            <div class="flex items-center justify-between p-2 rounded-lg hover:bg-emerald-50/30 transition-colors">
+                <label class="flex items-start space-x-3 cursor-pointer flex-1 select-none">
+                    <input type="checkbox" id="chk-pivot-num" class="mt-1 w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500">
+                    <span id="label-pivot-num" class="text-sm text-gray-700">Forza Numeri Puliti (Evita bug del "Conteggio")</span>
+                </label>
+                <div class="group relative inline-block ml-2 text-gray-400 hover:text-emerald-600 shrink-0 cursor-help p-1">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+                    <div id="tip-pivot-num" class="absolute bottom-full right-0 mb-2 w-64 bg-slate-800 text-white text-xs font-normal rounded-xl p-3 opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-200 shadow-xl border border-slate-700 z-20 leading-relaxed"></div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between p-2 rounded-lg hover:bg-emerald-50/30 transition-colors">
+                <label class="flex items-start space-x-3 cursor-pointer flex-1 select-none">
+                    <input type="checkbox" id="chk-pivot-blank" class="mt-1 w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500">
+                    <span id="label-pivot-blank" class="text-sm text-gray-700">Riempi Vuoti di Testo (Elimina la riga "(vuoto)")</span>
+                </label>
+                <div class="group relative inline-block ml-2 text-gray-400 hover:text-emerald-600 shrink-0 cursor-help p-1">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+                    <div id="tip-pivot-blank" class="absolute bottom-full right-0 mb-2 w-64 bg-slate-800 text-white text-xs font-normal rounded-xl p-3 opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-200 shadow-xl border border-slate-700 z-20 leading-relaxed"></div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between p-2 rounded-lg hover:bg-emerald-50/30 transition-colors">
+                <label class="flex items-start space-x-3 cursor-pointer flex-1 select-none">
+                    <input type="checkbox" id="chk-pivot-date" class="mt-1 w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500">
+                    <span id="label-pivot-date" class="text-sm text-gray-700">Genera Colonne Anno/Mese (Per Filtri Avanzati)</span>
+                </label>
+                <div class="group relative inline-block ml-2 text-gray-400 hover:text-emerald-600 shrink-0 cursor-help p-1">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+                    <div id="tip-pivot-date" class="absolute bottom-full right-0 mb-2 w-64 bg-slate-800 text-white text-xs font-normal rounded-xl p-3 opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-200 shadow-xl border border-slate-700 z-20 leading-relaxed"></div>
+                </div>
+            </div>
+        </div>
+
+        <button id="btn-process" disabled class="w-full bg-gray-300 text-gray-500 font-semibold p-4 rounded-xl cursor-not-allowed transition-all shadow-md focus:outline-none mb-5">
+            Carica un file per iniziare
+        </button>
+
+        <div class="bg-slate-50 border border-slate-200/60 rounded-xl p-3.5 flex items-start gap-3 shadow-inner">
+            <svg class="w-5 h-5 text-slate-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+            </svg>
+            <div class="space-y-0.5">
+                <h3 id="security-title" class="text-xs font-bold text-slate-700 uppercase tracking-wide">Garanzia di Riservatezza Aziendale</h3>
+                <p id="security-desc" class="text-xs text-slate-500 leading-relaxed">I tuoi file <strong>non vengono inviati a nessun server internet</strong>. L'intera elaborazione e la pulizia dei dati avvengono istantaneamente e localmente all'interno del tuo browser. Sicurezza e conformità GDPR garantite al 100%.</p>
+            </div>
         </div>
     </div>
-
-    <button id="process-btn">Elabora e Scarica File Pulito</button>
-    <div class="footer-note">🔒 Sicurezza 100%: L'elaborazione avviene localmente sul tuo PC. Nessun dato lascia il tuo browser.</div>
 
     <script>
-        let importedData = null;
-        let originalFileName = "file_pulito.xlsx";
+        // --- 1. DIZIONARIO TRADUZIONI ---
+        const translations = {
+            en: {
+                titleSuffix: "Format Matters Repair — clean data with a click",
+                dropText: "Drag & Drop or click to upload an Excel/CSV file",
+                badgeSecurity: "100% Local & Secure Processing",
+                optionsTitle: "Data Cleaning Options",
+                pivotTitle: "Pivot Table Optimization",
+                trimLabel: "Trim Spaces (Remove double & hidden spaces)",
+                caseLabel: "Fix Text Casing (Proper Case for Names/Emails)",
+                dedupLabel: "Smart Deduplication (Remove duplicates keeping the most complete row)",
+                dateLabel: "Standardize Dates (Convert to ISO YYYY-MM-DD format)",
+                pivotNumLabel: "Force Pivot-Ready Numbers (Fix 'Count vs Sum' bug)",
+                pivotBlankLabel: "Fill Text Blanks (Remove ugly '(blank)' labels)",
+                pivotDateLabel: "Generate Year/Month Columns (Perfect for Slicers)",
+                btnProcessActive: "Clean & Download File",
+                btnProcessDisabled: "Please upload a file first",
+                btnProcessing: "Processing... Please wait...",
+                securityTitle: "Corporate Privacy Guarantee",
+                securityDesc: "Your files are <strong>never uploaded to any remote server</strong>. All parsing and data cleaning happen instantly and entirely inside your browser. 100% GDPR compliant and safe for confidential financial or personal datasets.",
+                // Tooltips
+                tipTrim: "Removes invisible spaces at the beginning and end of text, and squashes multiple internal spaces into one. Fixes Excel lookup errors.",
+                tipCase: "Formats text cleanly (e.g. 'mArIo sMiTh' becomes 'Mario Smith'). Perfect for fixing messy contact lists.",
+                tipDedup: "Automatically detects rows with duplicate keys (like Email or ID). It cleverly deletes the duplicate, keeping the row with more data fields filled.",
+                tipDate: "Scans for calendar columns and forces dates written in chaotic formats (e.g. 25/06, 06-25-2026, or raw Excel serial numbers) into clean ISO YYYY-MM-DD format.",
+                tipPivotNum: "Scans numeric columns. Converts number-strings to real numbers and turns blank cells into 0. This forces Excel to use 'Sum' instead of 'Count' automatically inside the pivot.",
+                tipPivotBlank: "Replaces empty spaces in category or text columns with 'Unspecified'. This blocks the ugly '(blank)' row from appearing inside your clean reports.",
+                tipPivotDate: "Finds your date column and automatically appends two new columns at the end of the sheet: [FMR] Year and [FMR] Month. Essential for timeline Slicers."
+            },
+            it: {
+                titleSuffix: "Format Matters Repair — pulisci i tuoi dati con un clic",
+                dropText: "Trascina qui o clicca per caricare un file Excel/CSV",
+                badgeSecurity: "Elaborazione 100% Locale e Sicura",
+                optionsTitle: "Opzioni di Pulizia",
+                pivotTitle: "Ottimizzazione per Tabelle Pivot",
+                trimLabel: "Trim Spaces (Rimuovi spazi doppi e nascosti)",
+                caseLabel: "Fix Text Casing (Iniziali maiuscole per Nomi/Cognomi)",
+                dedupLabel: "Smart Deduplication (Rimuovi duplicati tenendo la riga più completa)",
+                dateLabel: "Standardize Dates (Standardizza le date nel formato ISO YYYY-MM-DD)",
+                pivotNumLabel: "Forza Numeri Puliti (Evita bug del 'Conteggio')",
+                pivotBlankLabel: "Riempi Vuoti di Testo (Elimina la riga '(vuoto)')",
+                pivotDateLabel: "Genera Colonne Anno/Mese (Per Filtri Avanzati)",
+                btnProcessActive: "Elabora e Scarica il File",
+                btnProcessDisabled: "Carica un file per iniziare",
+                btnProcessing: "Elaborazione in corso... Attendi...",
+                securityTitle: "Garanzia di Riservatezza Aziendale",
+                securityDesc: "I tuoi file <strong>non vengono inviati a nessun server internet</strong>. L'intera elaborazione e la pulizia dei dati avvengono istantaneamente e localmente all'interno del tuo browser. Sicurezza e conformità GDPR garantite al 100% per dati sensibili o finanziari.",
+                // Tooltips
+                tipTrim: "Rimuove gli spazi vuoti invisibili prima e dopo il testo e riduce i doppi spazi interni a uno solo. Evita i fallimenti dei CERCA.VERT su Excel.",
+                tipCase: "Uniforma la formattazione visiva (es. da 'mArIo rOsSi' a 'Mario Rossi'). Ideale per rendere professionali liste di nomi, cognomi o città.",
+                tipDedup: "Rileva righe duplicate in base a colonne chiave (como Email o ID). Invece di cancellare a caso, confronta i doppioni e tiene la riga con più dati inseriti.",
+                tipDate: "Trova le colonne temporali e standardizza date scritte in formati diversi (es. 25/06/2026, 06-25-2026 o i numeri seriali di Excel) nella norma internazionale YYYY-MM-DD.",
+                tipPivotNum: "Analizza le colonne numeriche. Converte i testi in numeri reali e inserisce uno 0 dove mancano dati. Costringe Excel ad applicare la 'Somma' automatica anziché il 'Conteggio'.",
+                tipPivotBlank: "Sostituisce le celle vuote nelle colonne di testo con 'Non Specificato'. Impedisce la comparsa dell'antiestetica riga o colonna denominata '(vuoto)' nei tuoi report.",
+                tipPivotDate: "Intercetta la colonna delle date e genera automaticamente due colonne extra a fine foglio: [FMR] Anno e [FMR] Mese. Perfetto per creare i filtri a pulsante (Slicers)."
+            }
+        };
 
-        // Ascolta il caricamento del file
-        document.getElementById('file-input').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
+        let currentLang = navigator.language.startsWith('it') ? 'it' : 'en';
+        let selectedFile = null;
+        let isProcessing = false;
+
+        const langSelect = document.getElementById("lang-select");
+        const dropZone = document.getElementById("drop-zone");
+        const fileInput = document.getElementById("file-input");
+        const fileNameDisplay = document.getElementById("file-name");
+        const dropText = document.getElementById("drop-text");
+        const btnProcess = document.getElementById("btn-process");
+        const appSubtitle = document.getElementById("app-subtitle");
+
+        langSelect.value = currentLang;
+
+        function updateInterfaceTexts() {
+            const t = translations[currentLang];
             
-            originalFileName = "FMR_pulito_" + file.name.split('.')[0] + ".xlsx";
+            appSubtitle.innerText = t.titleSuffix;
+            if (!selectedFile) dropText.innerText = t.dropText;
             
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, {type: 'array'});
-                const firstSheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[firstSheetName];
-                
-                importedData = XLSX.utils.sheet_to_json(worksheet, {defval: ""});
-                alert(`🎯 File caricato!\n• Rilevate ${importedData.length} righe.\nOra seleziona le opzioni e clicca sul bottone in basso.`);
-            };
-            reader.readAsArrayBuffer(file);
+            document.getElementById("badge-security").innerText = t.badgeSecurity;
+            document.getElementById("options-title").innerText = t.optionsTitle;
+            document.getElementById("pivot-title").innerText = t.pivotTitle;
+            
+            document.getElementById("label-trim").innerText = t.trimLabel;
+            document.getElementById("label-case").innerText = t.caseLabel;
+            document.getElementById("label-dedup").innerText = t.dedupLabel;
+            document.getElementById("label-date").innerText = t.dateLabel;
+            document.getElementById("label-pivot-num").innerText = t.pivotNumLabel;
+            document.getElementById("label-pivot-blank").innerText = t.pivotBlankLabel;
+            document.getElementById("label-pivot-date").innerText = t.pivotDateLabel;
+
+            document.getElementById("tip-trim").innerText = t.tipTrim;
+            document.getElementById("tip-case").innerText = t.tipCase;
+            document.getElementById("tip-dedup").innerText = t.tipDedup;
+            document.getElementById("tip-date").innerText = t.tipDate;
+            document.getElementById("tip-pivot-num").innerText = t.tipPivotNum;
+            document.getElementById("tip-pivot-blank").innerText = t.tipPivotBlank;
+            document.getElementById("tip-pivot-date").innerText = t.tipPivotDate;
+
+            document.getElementById("security-title").innerText = t.securityTitle;
+            document.getElementById("security-desc").innerHTML = t.securityDesc;
+            
+            if (isProcessing) {
+                btnProcess.innerText = t.btnProcessing;
+            } else if (selectedFile) {
+                btnProcess.innerText = t.btnProcessActive;
+            } else {
+                btnProcess.innerText = t.btnProcessDisabled;
+            }
+        }
+
+        langSelect.addEventListener("change", (e) => {
+            currentLang = e.target.value;
+            updateInterfaceTexts();
         });
 
-        // Elaborazione al clic del bottone
-        document.getElementById('process-btn').addEventListener('click', () => {
-            if (!importedData) {
-                alert("Per favore, seleziona o trascina prima un file Excel o CSV.");
-                return;
+        // --- 2. GESTIONE EVENTI INTERFACCIA ---
+        dropZone.addEventListener("click", () => fileInput.click());
+        dropZone.addEventListener("dragover", (e) => { e.preventDefault(); dropZone.classList.add("border-emerald-500", "bg-emerald-50/50"); });
+        dropZone.addEventListener("dragleave", () => { dropZone.classList.remove("border-emerald-500", "bg-emerald-50/50"); });
+        dropZone.addEventListener("drop", (e) => {
+            e.preventDefault();
+            dropZone.classList.remove("border-emerald-500", "bg-emerald-50/50");
+            if (e.dataTransfer.files.length > 0) handleFileSelection(e.dataTransfer.files[0]);
+        });
+        fileInput.addEventListener("change", (e) => {
+            if (e.target.files.length > 0) handleFileSelection(e.target.files[0]);
+        });
+
+        function handleFileSelection(file) {
+            selectedFile = file;
+            dropText.classList.add("hidden");
+            fileNameDisplay.innerText = file.name;
+            fileNameDisplay.classList.remove("hidden");
+            btnProcess.disabled = false;
+            btnProcess.className = "w-full bg-emerald-600 text-white font-semibold p-4 rounded-xl cursor-pointer hover:bg-emerald-700 transition-all shadow-md hover:shadow-lg focus:outline-none mb-5";
+            btnProcess.innerText = translations[currentLang].btnProcessActive;
+        }
+
+        // --- 3. MOTORE LOGICO DI ELABORAZIONE ---
+        
+        function standardizeDateValue(value) {
+            if (!value) return value;
+            if (value instanceof Date) {
+                return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}-${String(value.getDate()).padStart(2, '0')}`;
             }
-
-            const cleanSpaces = document.getElementById('clean-spaces').checked;
-            const properCase = document.getElementById('proper-case').checked;
-            const formatPhones = document.getElementById('format-phones').checked;
-            const removeDuplicates = document.getElementById('remove-duplicates').checked;
-
-            // 1. Pulizia dei testi riga per riga
-            let processedData = importedData.map(row => {
-                let newRow = { ...row };
-                for (let key in newRow) {
-                    if (newRow[key] !== undefined && newRow[key] !== null) {
-                        let stringValue = String(newRow[key]).trim();
-
-                        // Pulizia degli spazi
-                        if (cleanSpaces) {
-                            stringValue = stringValue.replace(/\s+/g, ' ');
-                        }
-                        
-                        // Correzione Maiuscole/Minuscole
-                        if (properCase && isNaN(stringValue)) {
-                            stringValue = stringValue.toLowerCase().replace(/\b\w/g, s => s.toUpperCase());
-                        }
-
-                        // Correzione e formattazione Telefoni Italiani
-                        if (formatPhones) {
-                            let isPhoneColumn = /tel|cell|phone|mob/i.test(key);
-                            let isNumeric = /^\d+$/.test(stringValue.replace(/[\s\-\+\(\)]/g, ''));
-                            
-                            if (isPhoneColumn || (isNumeric && stringValue.length >= 8)) {
-                                let cleaned = stringValue.replace(/\D/g, '');
-                                
-                                if (cleaned.startsWith('0039')) {
-                                    cleaned = cleaned.slice(2);
-                                }
-                                if (cleaned.startsWith('3') && !cleaned.startsWith('39')) {
-                                    cleaned = '39' + cleaned;
-                                }
-                                
-                                if (cleaned.startsWith('39') && cleaned.length >= 11) {
-                                    stringValue = `+39 ${cleaned.slice(2, 5)} ${cleaned.slice(5)}`;
-                                }
-                            }
-                        }
-
-                        newRow[key] = stringValue;
-                    }
+            if (typeof value === 'string') {
+                let str = value.trim();
+                let matchYMD = str.match(/^(\d{4})[-./](\d{1,2})[-./](\d{1,2})/);
+                if (matchYMD) return `${matchYMD[1]}-${matchYMD[2].padStart(2, '0')}-${matchYMD[3].padStart(2, '0')}`;
+                
+                let matchDMY = str.match(/^(\d{1,2})[-./](\d{1,2})[-./](\d{4})/);
+                if (matchDMY) {
+                    let g1 = parseInt(matchDMY[1], 10), g2 = parseInt(matchDMY[2], 10), y = matchDMY[3];
+                    let day = String(g1 > 12 ? g1 : g2).padStart(2, '0');
+                    let month = String(g1 > 12 ? g2 : g1).padStart(2, '0');
+                    if (g1 <= 12 && g2 <= 12) { day = String(g1).padStart(2, '0'); month = String(g2).padStart(2, '0'); }
+                    return `${y}-${month}-${day}`;
                 }
-                return newRow;
+                let parsed = Date.parse(str);
+                if (!isNaN(parsed)) {
+                    let dObj = new Date(parsed);
+                    return `${dObj.getFullYear()}-${String(dObj.getMonth() + 1).padStart(2, '0')}-${String(dObj.getDate()).padStart(2, '0')}`;
+                }
+            }
+            return value;
+        }
+
+        function applySmartDeduplication(jsonData) {
+            if (jsonData.length === 0) return jsonData;
+            let keyColumn = null;
+            const candidates = ['email', 'mail', 'id', 'codice', 'cf', 'piva', 'user', 'phone', 'tel'];
+            for (let kw of candidates) {
+                for (let key in jsonData[0]) { if (key.toLowerCase().includes(kw)) { keyColumn = key; break; } }
+                if (keyColumn) break;
+            }
+            if (!keyColumn) keyColumn = Object.keys(jsonData[0])[0];
+            if (!keyColumn) return jsonData;
+
+            const uniqueMap = new Map();
+            const rowsWithEmptyKey = [];
+
+            for (let row of jsonData) {
+                let keyValue = String(row[keyColumn] || '').trim().toLowerCase();
+                if (!keyValue) { rowsWithEmptyKey.push(row); continue; }
+                let filled = Object.values(row).filter(v => v !== null && v !== undefined && String(v).trim() !== '').length;
+                if (uniqueMap.has(keyValue)) {
+                    let oldFilled = Object.values(uniqueMap.get(keyValue)).filter(v => v !== null && v !== undefined && String(v).trim() !== '').length;
+                    if (filled > oldFilled) uniqueMap.set(keyValue, row);
+                } else { uniqueMap.set(keyValue, row); }
+            }
+            return [...Array.from(uniqueMap.values()), ...rowsWithEmptyKey];
+        }
+
+        function processExcelData(jsonData) {
+            if (jsonData.length === 0) return jsonData;
+
+            const isTrimActive = document.getElementById("chk-trim").checked;
+            const isCaseActive = document.getElementById("chk-case").checked;
+            const isDedupActive = document.getElementById("chk-dedup").checked;
+            const isDateActive = document.getElementById("chk-date").checked;
+            const isPivotNumActive = document.getElementById("chk-pivot-num").checked;
+            const isPivotBlankActive = document.getElementById("chk-pivot-blank").checked;
+            const isPivotDateActive = document.getElementById("chk-pivot-date").checked;
+
+            const dateKeywords = ['data', 'date', 'giorno', 'day', 'creato', 'created', 'aggiornato', 'updated', 'nascita', 'birth'];
+            
+            const columns = Object.keys(jsonData[0]);
+            const numericColumns = new Set();
+            const detectDateColumns = new Set();
+
+            columns.forEach(col => {
+                if (dateKeywords.some(kw => col.toLowerCase().includes(kw))) {
+                    detectDateColumns.add(col);
+                } else {
+                    let numVotes = 0, totalVotes = 0;
+                    jsonData.forEach(row => {
+                        let v = row[col];
+                        if (v !== undefined && v !== null && v !== "") {
+                            totalVotes++;
+                            let cleanV = String(v).replace(/[\$,€%\s]/g, '').replace(',', '.');
+                            if (!isNaN(parseFloat(cleanV)) && isFinite(cleanV)) numVotes++;
+                        }
+                    });
+                    if (totalVotes > 0 && (numVotes / totalVotes) > 0.5) numericColumns.add(col);
+                }
             });
 
-            let righePrima = processedData.length;
+            for (let row of jsonData) {
+                let primaryDateStr = null;
 
-            // 2. Eliminazione duplicati
-            if (removeDuplicates) {
-                let seen = new Set();
-                processedData = processedData.filter(row => {
-                    let rowString = JSON.stringify(row);
-                    if (seen.has(rowString)) {
-                        return false;
+                for (let key of columns) {
+                    let value = row[key];
+
+                    if (isDateActive && detectDateColumns.has(key)) {
+                        value = standardizeDateValue(value);
+                        if (value && /^\d{4}-\d{2}-\d{2}$/.test(value)) primaryDateStr = value;
                     }
-                    seen.add(rowString);
-                    return true;
-                });
+
+                    if (isPivotNumActive && numericColumns.has(key)) {
+                        if (value === undefined || value === null || String(value).trim() === "") {
+                            value = 0;
+                        } else {
+                            let cleanNum = String(value).replace(/[\$,€%\s]/g, '').replace(',', '.');
+                            let parsedNum = parseFloat(cleanNum);
+                            value = !isNaN(parsedNum) ? parsedNum : 0;
+                        }
+                    } 
+                    else if (isPivotBlankActive && !detectDateColumns.has(key)) {
+                        if (value === undefined || value === null || String(value).trim() === "") {
+                            value = currentLang === 'it' ? 'Non Specificato' : 'Unspecified';
+                        }
+                    }
+
+                    if (typeof value === 'string' && !/^\d{4}-\d{2}-\d{2}$/.test(value) && value !== 'Non Specificato' && value !== 'Unspecified') {
+                        if (isTrimActive) value = value.replace(/\s+/g, ' ').trim();
+                        if (isCaseActive) value = value.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
+                    }
+
+                    row[key] = value;
+                }
+
+                if (isPivotDateActive) {
+                    if (!primaryDateStr) {
+                        for (let dCol of detectDateColumns) {
+                            let v = standardizeDateValue(row[dCol]);
+                            if (v && /^\d{4}-\d{2}-\d{2}$/.test(v)) { primaryDateStr = v; break; }
+                        }
+                    }
+                    
+                    if (primaryDateStr) {
+                        let parts = primaryDateStr.split('-');
+                        row[currentLang === 'it' ? '[Pivot] Anno' : '[Pivot] Year'] = parseInt(parts[0], 10);
+                        row[currentLang === 'it' ? '[Pivot] Mese' : '[Pivot] Month'] = parts[1];
+                    } else {
+                        row[currentLang === 'it' ? '[Pivot] Anno' : '[Pivot] Year'] = currentLang === 'it' ? 'N/D' : 'N/A';
+                        row[currentLang === 'it' ? '[Pivot] Mese' : '[Pivot] Month'] = currentLang === 'it' ? 'N/D' : 'N/A';
+                    }
+                }
             }
 
-            let righeDopo = processedData.length;
-            let duplicatiEliminati = righePrima - righeDopo;
+            if (isDedupActive) jsonData = applySmartDeduplication(jsonData);
+            return jsonData;
+        }
 
-            if (removeDuplicates && duplicatiEliminati > 0) {
-                alert(`🔥 Pulizia completata con successo!\n• Righe totali salvate: ${righeDopo}\n• Duplicati trovati ed eliminati: ${duplicatiEliminati}`);
-            } else {
-                alert(`🎯 Pulizia completata con successo! Il file pulito è pronto.`);
-            }
+        btnProcess.addEventListener("click", () => {
+            if (!selectedFile) return;
+            isProcessing = true;
+            const t = translations[currentLang];
+            btnProcess.disabled = true;
+            btnProcess.innerText = t.btnProcessing;
+            btnProcess.className = "w-full bg-emerald-400 text-white font-semibold p-4 rounded-xl cursor-wait shadow-inner focus:outline-none animate-pulse mb-5";
 
-            // Generiamo il nuovo file Excel ed esportiamo
-            const newWorksheet = XLSX.utils.json_to_sheet(processedData);
-            const newWorkbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, "Dati Puliti");
-            XLSX.writeFile(newWorkbook, originalFileName);
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array', cellDates: true });
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    
+                    let jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+                    jsonData = processExcelData(jsonData);
+
+                    const newWorksheet = XLSX.utils.json_to_sheet(jsonData);
+                    const newWorkbook = XLSX.book_new();
+                    XLSX.book_append_sheet(newWorkbook, newWorksheet, firstSheetName);
+
+                    XLSX.writeFile(newWorkbook, `cleaned_${selectedFile.name}`);
+                } catch (err) {
+                    alert("Errore / Error: " + err.message);
+                } finally {
+                    isProcessing = false;
+                    btnProcess.classList.remove("animate-pulse");
+                    handleFileSelection(selectedFile); 
+                }
+            };
+            reader.readAsArrayBuffer(selectedFile);
         });
+
+        updateInterfaceTexts();
     </script>
 </body>
 </html>
